@@ -2,8 +2,8 @@ package com.georgestudenko.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,16 +11,18 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.georgestudenko.popularmovies.Utils.NetworkUtils;
-
+import com.georgestudenko.popularmovies.Utils.TheMovieDBQueryTask;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ItemClickListener{
 
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
      * the apiKey variable below:                                                                  *
      * ********************************************************************************************/
 
-    private final String apiKey="INSERT_YOUR_API_KEY_HERE";
+    private final String apiKey="SET_YOUR_API_KEY_HERE";
 
     private final String scheme="http";
     private final String host = "api.themoviedb.org";
@@ -42,8 +44,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
     private String currentPage="1";
 
     private FrameLayout mGrid;
+    private TextView noInternet;
     private RecyclerView mRecyclerView;
-    private MovieAdapter mMovieAdapter;
+    public MovieAdapter mMovieAdapter;
+
+    public MovieAdapter getMovieAdapter(){
+        return mMovieAdapter;
+    }
 
     public void setSortBy(String value){
         currentSortBy=value;
@@ -59,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         setContentView(R.layout.main_activity);
 
         mGrid = (FrameLayout) findViewById(R.id.gridView);
+        noInternet = (TextView) findViewById(R.id.tv_no_internet_error);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_images);
         int columns= getNumberOfColumns(this);
         GridLayoutManager layoutManager = new GridLayoutManager(this,columns);
@@ -67,10 +75,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         mRecyclerView.setHasFixedSize(true);
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
-
-        new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage));
+        System.out.println("IS CONNECTED???: " + NetworkUtils.isConnected(this.getApplicationContext()));
+        if(NetworkUtils.isConnected(this.getApplicationContext())) {
+            hideNoInternetError();
+            new TheMovieDBQueryTask().execute(buildURL(scheme, host, apiVersion, type, currentSortBy, apiKey, currentPage), this);
+        }else{
+            showNoInternetError();
+            Toast.makeText(this.getApplication(),this.getString(R.string.error),Toast.LENGTH_LONG).show();
+        }
     }
-
+    public void showNoInternetError(){
+        noInternet.setVisibility(View.VISIBLE);
+    }
+    public void hideNoInternetError(){
+        noInternet.setVisibility(View.INVISIBLE);
+    }
     public static int getNumberOfColumns(Context context) {
         DisplayMetrics display = context.getResources().getDisplayMetrics();
         float dpWidth = display.widthPixels / display.density;
@@ -147,38 +166,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         }
 
         startActivity(intent);
-    }
-
-    public class TheMovieDBQueryTask extends AsyncTask<URL,Void,String> {
-        @Override
-        protected String doInBackground(URL... param) {
-            URL url=param[0];
-            String jsonData= null;
-            try {
-                jsonData= NetworkUtils.getResponseFromHttpUrl(url);
-            }catch (IOException ex){
-                System.out.println("ERROR GETTING RAWDATA: ");
-                ex.printStackTrace();
-            }
-            return jsonData;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            JSONObject movieData=null;
-            try {
-                movieData = new JSONObject(s);
-            }
-            catch (JSONException ex){
-                System.out.println("ERROR onPostExcecute");
-                ex.printStackTrace();
-            }
-            mMovieAdapter.setMoviesData(movieData);
-        }
     }
 }

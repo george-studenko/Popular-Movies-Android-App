@@ -15,5 +15,15 @@
         android:layout_margin="0dp"
         android:padding="0dp">
     </android.support.v7.widget.RecyclerView>
-
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="No internet connection, please check your connection and try again..."
+    android:visibility="invisible"
+    android:textColor="@color/colorAccent"
+    android:textSize="20dp"
+    android:layout_gravity="center"
+    android:textAlignment="center"
+    android:id="@+id/tv_no_internet_error"
+    android:padding="20dp"/>
 </FrameLayout>
