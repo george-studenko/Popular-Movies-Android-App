@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         mRecyclerView.setHasFixedSize(true);
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
-        System.out.println("IS CONNECTED???: " + NetworkUtils.isConnected(this.getApplicationContext()));
         if(NetworkUtils.isConnected(this.getApplicationContext())) {
             hideNoInternetError();
             new TheMovieDBQueryTask().execute(buildURL(scheme, host, apiVersion, type, currentSortBy, apiKey, currentPage), this);
@@ -110,14 +109,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         if (id == R.id.action_sort_by_most_popular) {
             setSortBy(sortByPopular);
             this.setTitle(R.string.title_sorted_by_popular);
-            new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage));
+            new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
             return true;
         }
 
         if (id == R.id.action_sort_by_top_rated) {
             setSortBy(sortByTopRated);
             this.setTitle(R.string.title_sorted_by_top_rated);
-            new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage));
+            new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
             return true;
         }
 
