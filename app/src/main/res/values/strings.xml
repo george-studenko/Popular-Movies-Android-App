@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="action_settings">Settings</string>
+    <string name="sort_by">Sort By:</string>
+    <string name="sort_top_rated">Sort By Top Rated</string>
+    <string name="sort_most_popular">Sort By Most Popular</string>
+    <string name="details_movie_poster">Movie Poster:</string>
+    <string name="details_original_title">Original Title:</string>
+    <string name="details_user_rating">Rating:</string>
+    <string name="details_release_date">Release Date:</string>
+    <string name="details_synopsis">Synopsis:</string>
+    <string name="title_sorted_by_popular">Popular Movies by: Most Popular</string>
+    <string name="title_sorted_by_top_rated">Popular Movies by: Top Rated</string>
+</resources>
