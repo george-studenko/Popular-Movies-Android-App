@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:id="@+id/gridView"
     android:padding="0dp"
     android:layout_gravity="center">
@@ -20,12 +21,22 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No internet connection, please check your connection and try again..."
+        android:text="@string/no_internet_connection_please_check_your_connection_and_try_again"
         android:visibility="invisible"
         android:textColor="@color/colorAccent"
         android:textSize="20dp"
-        android:layout_gravity="center"
+        android:layout_centerVertical="true"
         android:textAlignment="center"
         android:id="@+id/tv_no_internet_error"
         android:padding="20dp"/>
-</FrameLayout>
+
+    <Button
+        android:id="@+id/goToFavoritesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Show My Favorites Movies"
+        android:layout_below="@id/tv_no_internet_error"
+        android:onClick="openFavorites"/>
+</RelativeLayout>
+</layout>

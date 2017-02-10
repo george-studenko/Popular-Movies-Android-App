@@ -1,15 +1,19 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="action_settings">Settings</string>
-    <string name="sort_by">Sort By:</string>
     <string name="sort_top_rated">Sort By Top Rated</string>
     <string name="sort_most_popular">Sort By Most Popular</string>
-    <string name="details_movie_poster">Movie Poster:</string>
-    <string name="details_original_title">Original Title:</string>
-    <string name="details_user_rating">Rating:</string>
-    <string name="details_release_date">Release Date:</string>
-    <string name="details_synopsis">Synopsis:</string>
     <string name="title_sorted_by_popular">Popular Movies by: Most Popular</string>
     <string name="title_sorted_by_top_rated">Popular Movies by: Top Rated</string>
     <string name="error">Something went wrong, please check your internet connection and try again</string>
+    <string name="my_favorite_movies">Popular Movies: My Favorites</string>
+    <string name="no_reviews"><![CDATA[<p style=\'text-align:center\'>There are no reviews for this movie at the moment...</p>]]></string>
+    <string name="author"><![CDATA["<b>Author</b>: "]]></string>
+    <string name="review"><![CDATA["<br/><br/><b>Review</b>: "]]></string>
+    <string name="review_separator"><![CDATA[<br/><br/><hr><br/>]]></string>
+    <string name="html_mime">text/html</string>
+    <string name="utf8">utf-8</string>
+    <string name="error_loading_reviews">Sorry!, couldn\'t load the reviews</string>
+    <string name="error_loading_trailers">Sorry!, couldn\'t load the trailers</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="no_internet_connection_please_check_your_connection_and_try_again">No internet connection, please check your connection and try again, you can still browse your favorite movies though!...</string>
 </resources>

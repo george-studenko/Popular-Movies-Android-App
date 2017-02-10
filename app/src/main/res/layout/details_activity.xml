@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout
+    android:id="@+id/activity_details"
+    style="@style/detailParentLayout">
+<TextView
+    android:id="@+id/title"
+    style="@style/movieTitle" />
+
+<ScrollView style="@style/detailScrollView">
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="30dp">
+
+        <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/bigTopPoster"
+        android:cropToPadding="true" android:scaleType="centerCrop"
+        android:adjustViewBounds="true" />
+
+       <android.support.design.widget.FloatingActionButton
+           android:id="@+id/favoriteButton"
+           app:fabSize="normal"
+           android:src="@drawable/star"
+           android:onClick="toogleFavorite"
+           style="@style/favFab" />
+
+        <LinearLayout
+            android:layout_below="@+id/bigTopPoster"
+            android:id="@+id/content"
+            style="@style/detailMainLinearLayout">
+            <LinearLayout style="@style/detailTopLayout">
+                <ImageView
+                    android:id="@+id/poster"
+                    style="@style/moviePoster" />
+
+
+                <LinearLayout style="@style/detailMovieInfoLayout">
+                    <TextView
+                        android:text="Release Date:"
+                        style="@style/releaseDateLabel" />
+                    <TextView
+                        android:id="@+id/release"
+                        style="@style/releaseDateText" />
+                    <TextView
+                        android:text="Rating:"
+                        style="@style/ratingLabel" />
+                    <TextView
+                        android:id="@+id/votes"
+                        style="@style/ratingText" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:text="Synopsis:"
+                style="@style/synopsisLabel" />
+            <TextView
+                android:id="@+id/overview"
+                style="@style/synopsisText" />
+            <TextView
+                android:id="@+id/trailersLabel"
+                android:text="Trailers &amp; Teasers:"
+                style="@style/releaseDateLabel" />
+
+            <GridLayout
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/trailers"/>
+            <TextView
+                android:text="Reviews:"
+                style="@style/releaseDateLabel"
+                android:id="@+id/reviewsTitle"
+                android:paddingTop="15dp"/>
+            <WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/reviews"
+                android:textColor="@color/colorBlack"/>
+        </LinearLayout>
+    </RelativeLayout>
+   </LinearLayout>
+</ScrollView>
+</LinearLayout>
+</layout>

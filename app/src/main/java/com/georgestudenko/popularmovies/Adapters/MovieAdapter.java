@@ -1,4 +1,4 @@
-package com.georgestudenko.popularmovies;
+package com.georgestudenko.popularmovies.Adapters;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,11 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.georgestudenko.popularmovies.MainActivity;
+import com.georgestudenko.popularmovies.R;
+import com.georgestudenko.popularmovies.Utils.TheMovieDBQueryTask;
 import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 
 /**
  * Created by george on 15/01/2017.
@@ -86,11 +92,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ImageViewHol
                 JSONArray items = moviesData.getJSONArray("results");
                 JSONObject item = items.getJSONObject(position);
                 String posterURL = item.getString("poster_path").replace("/", "");
-
                 Uri poster=buildPosterURL(posterURL);
 
-                Picasso.with(holder.imageHolder.getContext()).load(poster)//.networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(holder.imageHolder);
+                if(MainActivity.getSortBy()== MainActivity.SORT_BY_FAVORITES){
+                    Picasso.with(holder.imageHolder.getContext()).load(poster).networkPolicy(NetworkPolicy.OFFLINE).into(holder.imageHolder);
+                }else{
+                    Picasso.with(holder.imageHolder.getContext()).load(poster).into(holder.imageHolder);
+                }
             }
         }
         catch (JSONException ex){

@@ -2,7 +2,7 @@ package com.georgestudenko.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,13 +16,15 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.georgestudenko.popularmovies.Adapters.MovieAdapter;
 import com.georgestudenko.popularmovies.Utils.NetworkUtils;
 import com.georgestudenko.popularmovies.Utils.TheMovieDBQueryTask;
+import com.georgestudenko.popularmovies.databinding.MainActivityBinding;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ItemClickListener{
 
@@ -31,68 +33,69 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
      * the apiKey variable below:                                                                  *
      * ********************************************************************************************/
 
-    private final String apiKey="SET_YOUR_API_KEY_HERE";
+    private final String apiKey = BuildConfig.API_KEY;
 
     private final String scheme="http";
+    private final String secureScheme="https://";
     private final String host = "api.themoviedb.org";
     private final String apiVersion="3";
     private final String type="movie";
-    public static final String sortByTopRated="top_rated";
-    public static final String sortByPopular="popular";
+    public static final String SORT_BY_TOP_RATED ="top_rated";
+    public static final String SORT_BY_POPULAR ="popular";
+    public static final String SORT_BY_FAVORITES ="userFavoriteMovies";
 
-    private String currentSortBy="popular";
+    private static String currentSortBy="popular";
     private String currentPage="1";
 
-    private FrameLayout mGrid;
-    private TextView noInternet;
-    private RecyclerView mRecyclerView;
     public MovieAdapter mMovieAdapter;
-
-    public MovieAdapter getMovieAdapter(){
-        return mMovieAdapter;
-    }
+    public MainActivityBinding mBinding;
 
     public void setSortBy(String value){
-        currentSortBy=value;
+        currentSortBy = value;
     }
+    public static String getSortBy(){return currentSortBy;}
 
-    public String getSortBy(){
-        return currentSortBy;
+    public void p(String text){
+        System.out.println(text);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        mBinding = DataBindingUtil.setContentView(this,R.layout.main_activity);
 
-        mGrid = (FrameLayout) findViewById(R.id.gridView);
-        noInternet = (TextView) findViewById(R.id.tv_no_internet_error);
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_images);
-        int columns= getNumberOfColumns(this);
+        int columns= getNumberOfColumns(this,180);
+
         GridLayoutManager layoutManager = new GridLayoutManager(this,columns);
         layoutManager.setAutoMeasureEnabled(true);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
+        mBinding.rvImages.setLayoutManager(layoutManager);
+        mBinding.rvImages.setHasFixedSize(true);
         mMovieAdapter = new MovieAdapter(this);
-        mRecyclerView.setAdapter(mMovieAdapter);
+        mBinding.rvImages.setAdapter(mMovieAdapter);
         if(NetworkUtils.isConnected(this.getApplicationContext())) {
             hideNoInternetError();
             new TheMovieDBQueryTask().execute(buildURL(scheme, host, apiVersion, type, currentSortBy, apiKey, currentPage), this);
         }else{
-            showNoInternetError();
-            Toast.makeText(this.getApplication(),this.getString(R.string.error),Toast.LENGTH_LONG).show();
+            hideNoInternetError();
+            Toast.makeText(this.getApplication(),this.getString(R.string.error),Toast.LENGTH_SHORT).show();
+            setSortBy(SORT_BY_FAVORITES);
+            this.setTitle(R.string.my_favorite_movies);
+            new TheMovieDBQueryTask().execute(buildURL(scheme, host, apiVersion, type, currentSortBy, apiKey, currentPage), this);
         }
     }
     public void showNoInternetError(){
-        noInternet.setVisibility(View.VISIBLE);
+        mBinding.tvNoInternetError.setVisibility(View.VISIBLE);
+        mBinding.goToFavoritesButton.setVisibility(View.VISIBLE);
     }
     public void hideNoInternetError(){
-        noInternet.setVisibility(View.INVISIBLE);
+        mBinding.tvNoInternetError.setVisibility(View.INVISIBLE);
+        mBinding.goToFavoritesButton.setVisibility(View.INVISIBLE);
     }
-    public static int getNumberOfColumns(Context context) {
+
+    public static int getNumberOfColumns(Context context, int divider) {
         DisplayMetrics display = context.getResources().getDisplayMetrics();
         float dpWidth = display.widthPixels / display.density;
-        int columns = (int) (dpWidth / 180);
+        int columns = (int) (dpWidth / divider);
         return columns;
     }
 
@@ -106,17 +109,37 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_sort_by_most_popular) {
-            setSortBy(sortByPopular);
-            this.setTitle(R.string.title_sorted_by_popular);
-            new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+        if (id == R.id.action_favorite_movies) {
+            openFavorites(null);
             return true;
         }
 
-        if (id == R.id.action_sort_by_top_rated) {
-            setSortBy(sortByTopRated);
-            this.setTitle(R.string.title_sorted_by_top_rated);
-            new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+        if(NetworkUtils.isConnected(this.getApplicationContext())) {
+            hideNoInternetError();
+
+            if (id == R.id.action_sort_by_most_popular) {
+                setSortBy(SORT_BY_POPULAR);
+                this.setTitle(R.string.title_sorted_by_popular);
+                new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+                return true;
+            }
+
+            if (id == R.id.action_sort_by_top_rated) {
+                setSortBy(SORT_BY_TOP_RATED);
+                this.setTitle(R.string.title_sorted_by_top_rated);
+                new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+                return true;
+            }
+        }else{
+            if (id == R.id.action_sort_by_most_popular) {
+                this.setTitle(R.string.title_sorted_by_popular);
+            }
+            if (id == R.id.action_sort_by_top_rated) {
+                this.setTitle(R.string.title_sorted_by_top_rated);
+            }
+            mBinding.rvImages.removeAllViewsInLayout();
+            showNoInternetError();
+            Toast.makeText(this.getApplication(),this.getString(R.string.error),Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -146,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
     @Override
     public void onPosterClick(int itemIndex) {
         JSONObject movie = mMovieAdapter.getMovieDetails(itemIndex);
-        Intent intent = new Intent(this,Details.class);
+        Intent intent = new Intent(this,DetailsActivity.class);
         try{
             intent.putExtra("title", movie.getString("original_title"));
 
@@ -154,16 +177,34 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
             Uri posterUri=mMovieAdapter.buildPosterURL(posterPath);
             String poster=posterUri.toString();
             intent.putExtra("poster", poster);
+            intent.putExtra("rawPoster", posterPath);
 
             intent.putExtra("release", movie.getString("release_date"));
             intent.putExtra("vote", movie.getString("vote_average"));
             intent.putExtra("overview", movie.getString("overview"));
+            intent.putExtra("id", movie.getString("id"));
 
+            String trailersAPIUrl = secureScheme+host+"/"+apiVersion+"/"+type+"/"+movie.getString("id")+"/videos?api_key="+apiKey;
+            String reviewsAPIUrl = secureScheme+host+"/"+apiVersion+"/"+type+"/"+movie.getString("id")+"/reviews?api_key="+apiKey;
+            intent.putExtra("trailersUrl", trailersAPIUrl);
+            intent.putExtra("reviewsUrl", reviewsAPIUrl);
+
+            if(getSortBy()==SORT_BY_FAVORITES && !NetworkUtils.isConnected(getApplicationContext())){
+                intent.putExtra("reviews", movie.getString("reviews"));
+                intent.putExtra("bigPoster", movie.getString("bigPoster"));
+            }
 
         }catch (JSONException ex){
-
+            ex.printStackTrace();
         }
-
         startActivity(intent);
+    }
+
+    public void openFavorites(View view) {
+        hideNoInternetError();
+        setSortBy(SORT_BY_FAVORITES);
+        this.setTitle(R.string.my_favorite_movies);
+        this.setTitle(R.string.my_favorite_movies);
+        new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
     }
 }

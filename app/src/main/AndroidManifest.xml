@@ -19,7 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Details" android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".DetailsActivity" android:parentActivityName=".MainActivity"></activity>
+        <provider
+            android:authorities="com.georgestudenko.popularmovies"
+            android:name="com.georgestudenko.popularmovies.Data.FavoriteMovieProvider"/>
     </application>
 
 </manifest>

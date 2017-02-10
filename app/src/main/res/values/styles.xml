@@ -17,4 +17,114 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!--Layout styles-->
+
+    <style name="baseLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="detailMainLinearLayout" parent="baseLayoutStyle">
+        <item name="android:paddingLeft">15dp</item>
+        <item name="android:paddingRight">15dp</item>
+        <item name="android:paddingTop">10dp</item>
+    </style>
+
+    <style name="detailParentLayout" parent="baseLayoutStyle">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/colorWhite</item>
+    </style>
+
+    <style name="detailMovieInfoLayout" parent="baseLayoutStyle">
+        <item name="android:layout_weight">3</item>
+        <item name="android:paddingLeft">20dp</item>
+    </style>
+
+    <style name="detailTopLayout" parent="baseLayoutStyle">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:weightSum">6</item>
+    </style>
+
+    <style name="detailScrollView">
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+
+    <!--Textview Styles-->
+
+    <style name="baseTextViewStyleBlack">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
+    <style name="baseTextViewStyleGray">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorGray</item>
+    </style>
+
+    <style name="movieTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:padding">15dp</item>
+        <item name="android:textSize">40sp</item>
+    </style>
+
+    <style name="synopsisLabel" parent="baseTextViewStyleBlack">
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="synopsisText" parent="baseTextViewStyleGray">
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingTop">5dp</item>
+    </style>
+
+    <style name="releaseDateLabel" parent="baseTextViewStyleBlack">
+        <item name="android:textSize">30sp</item>
+        <item name="android:paddingTop">10dp</item>
+    </style>
+
+    <style name="releaseDateText" parent="baseTextViewStyleGray">
+        <item name="android:textSize">30sp</item>
+        <item name="android:gravity">left</item>
+        <item name="android:textAlignment">gravity</item>
+    </style>
+
+    <style name="ratingLabel" parent="baseTextViewStyleBlack">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="ratingText" parent="baseTextViewStyleGray">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!--Other Views-->
+
+    <style name="moviePoster">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:layout_weight">3</item>
+        <item name="android:scaleType">fitStart</item>
+        <item name="android:paddingLeft">15dp</item>
+    </style>
+
+    <style name="favFab">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginBottom">-32dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:layout_alignBottom">@+id/bigTopPoster</item>
+    </style>
 </resources>
