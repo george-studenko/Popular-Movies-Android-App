@@ -16,4 +16,5 @@
     <string name="error_loading_trailers">Sorry!, couldn\'t load the trailers</string>
     <string name="my_favorites">My Favorites</string>
     <string name="no_internet_connection_please_check_your_connection_and_try_again">No internet connection, please check your connection and try again, you can still browse your favorite movies though!...</string>
+    <string name="show_my_favorites_movies">Show My Favorites Movies</string>
 </resources>
