@@ -10,17 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.georgestudenko.popularmovies.MainActivity;
+import com.georgestudenko.popularmovies.UI.MainActivity;
 import com.georgestudenko.popularmovies.R;
-import com.georgestudenko.popularmovies.Utils.TheMovieDBQueryTask;
 import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
 
 /**
  * Created by george on 15/01/2017.

@@ -1,4 +1,4 @@
-package com.georgestudenko.popularmovies;
+package com.georgestudenko.popularmovies.UI;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,16 +7,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.georgestudenko.popularmovies.Adapters.MovieAdapter;
+import com.georgestudenko.popularmovies.BuildConfig;
+import com.georgestudenko.popularmovies.R;
+import com.georgestudenko.popularmovies.UI.DetailsActivity;
 import com.georgestudenko.popularmovies.Utils.NetworkUtils;
 import com.georgestudenko.popularmovies.Utils.TheMovieDBQueryTask;
 import com.georgestudenko.popularmovies.databinding.MainActivityBinding;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = DataBindingUtil.setContentView(this,R.layout.main_activity);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         int columns= getNumberOfColumns(this,180);
 

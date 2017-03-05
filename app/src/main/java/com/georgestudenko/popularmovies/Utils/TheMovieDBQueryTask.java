@@ -6,8 +6,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 
 import com.georgestudenko.popularmovies.Data.FavoriteMovieContract.FavoriteMovieEntry;
-import com.georgestudenko.popularmovies.DetailsActivity;
-import com.georgestudenko.popularmovies.MainActivity;
+import com.georgestudenko.popularmovies.UI.MainActivity;
 import com.georgestudenko.popularmovies.R;
 
 import org.json.JSONArray;

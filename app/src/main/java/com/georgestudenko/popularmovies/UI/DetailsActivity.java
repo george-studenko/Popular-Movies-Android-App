@@ -1,4 +1,4 @@
-package com.georgestudenko.popularmovies;
+package com.georgestudenko.popularmovies.UI;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -6,16 +6,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +27,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.georgestudenko.popularmovies.Data.FavoriteMovieContract;
 import com.georgestudenko.popularmovies.Data.FavoriteMovieContract.FavoriteMovieEntry;
+import com.georgestudenko.popularmovies.R;
 import com.georgestudenko.popularmovies.Utils.NetworkUtils;
 import com.georgestudenko.popularmovies.databinding.DetailsActivityBinding;
 import com.squareup.picasso.NetworkPolicy;
@@ -41,9 +37,6 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 public class DetailsActivity extends AppCompatActivity {
     boolean mIsFavoriteMovie;
@@ -60,7 +53,7 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mReviews="";
-        mBinding = DataBindingUtil.setContentView(this,R.layout.details_activity);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.details_activity);
         Intent intent = getIntent();
 
         if(intent.hasExtra("title")){
