@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-
 import com.georgestudenko.popularmovies.UI.MainActivity;
 import com.georgestudenko.popularmovies.R;
 import com.squareup.picasso.NetworkPolicy;
@@ -133,11 +132,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ImageViewHol
 
         }
         return count;
-    }
-
-    public void fillMoviesDataArray(JSONObject data){
-            moviesData = data;
-            notifyDataSetChanged();
     }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
