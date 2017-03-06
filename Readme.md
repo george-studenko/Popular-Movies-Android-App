@@ -10,7 +10,7 @@ https://www.themoviedb.org/account/signup
 Once you get your key you can place it on your `gradle.properties` file like this: 
 apiKey="YOUR_API_KEY_HERE" 
 
-Alternatively you could place the key on `MainActivity.java` by replacing: 
+Alternatively you could place the key on `Utils/NetworkUtils.java` by replacing: 
 
 `private final String apiKey = BuildConfig.API_KEY;`
  
