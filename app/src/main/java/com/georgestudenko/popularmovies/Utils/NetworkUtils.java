@@ -95,4 +95,15 @@ public class NetworkUtils {
         }
         return URL.toString();
     }
+
+    public static Uri buildPosterURL(String posterURL){
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(scheme)
+                .authority(imageHost)
+                .appendPath(imageFragmentT)
+                .appendPath(imageFragmentP)
+                .appendPath(imageSize)
+                .appendPath(posterURL);
+        return  builder.build();
+    }
 }
