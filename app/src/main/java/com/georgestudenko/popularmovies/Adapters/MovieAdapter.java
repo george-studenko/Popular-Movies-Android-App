@@ -3,19 +3,19 @@ package com.georgestudenko.popularmovies.Adapters;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.georgestudenko.popularmovies.Models.Movie;
 import com.georgestudenko.popularmovies.UI.MainActivity;
 import com.georgestudenko.popularmovies.R;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by george on 15/01/2017.
@@ -23,12 +23,8 @@ import org.json.JSONObject;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ImageViewHolder> {
 
-    private JSONObject moviesData;
-    private String imageScheme="http";
-    private String imageHost="image.tmdb.org";
-    private String imageFragmentT="t";
-    private String imageFragmentP="p";
-    private String imageSize="w342";
+    private List<Movie> mMovies;
+
 
     private final ItemClickListener mListener;
 
@@ -40,21 +36,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ImageViewHol
         mListener=listener;
     }
 
-    public JSONObject getMovieDetails(int position){
-        JSONObject movie = null;
-        try {
-            if (moviesData != null) {
-                JSONArray items = moviesData.getJSONArray("results");
-                movie = items.getJSONObject(position);
+    public Movie getMovieDetails(int position){
+        Movie movie = null;
+            if (mMovies != null) {
+                movie = mMovies.get(position);
             }
-        }catch (JSONException ex){
-
-        }
         return  movie;
     }
 
-    public void setMoviesData(JSONObject data){
-        moviesData=data;
+    public void setMoviesData(List<Movie> movies){
+        mMovies=movies;
         notifyDataSetChanged();
     }
 
@@ -69,25 +60,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ImageViewHol
         return viewHolder;
     }
 
-    public Uri buildPosterURL(String posterURL){
-        Uri.Builder builder = new Uri.Builder();
-        builder.scheme(imageScheme)
-                .authority(imageHost)
-                .appendPath(imageFragmentT)
-                .appendPath(imageFragmentP)
-                .appendPath(imageSize)
-                .appendPath(posterURL);
-        return  builder.build();
-    }
-
     @Override
     public void onBindViewHolder(ImageViewHolder holder, int position) {
-        try {
-            if(moviesData!=null) {
-                JSONArray items = moviesData.getJSONArray("results");
-                JSONObject item = items.getJSONObject(position);
-                String posterURL = item.getString("poster_path").replace("/", "");
-                Uri poster=buildPosterURL(posterURL);
+            if(mMovies!=null) {
+                Movie item = mMovies.get(position);
+                Uri poster = item.getPoster();
 
                 if(MainActivity.getSortBy()== MainActivity.SORT_BY_FAVORITES){
                     Picasso.with(holder.imageHolder.getContext()).load(poster).networkPolicy(NetworkPolicy.OFFLINE).into(holder.imageHolder);
@@ -96,42 +73,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ImageViewHol
                 }
             }
         }
-        catch (JSONException ex){
-            Log.d("onBindViewHolder",ex.toString());
-            ex.printStackTrace();
-        }
-    }
 
     @Override
     public long getItemId(int position) {
         long id=0;
-        try {
-            if(moviesData!=null) {
-                JSONArray items = moviesData.getJSONArray("results");
-                JSONObject item = items.getJSONObject(position);
-                id = item.getLong("id");
+            if(mMovies!=null) {
+                Movie item = mMovies.get(position);
+                id = item.getId();
             }
-        }
-        catch (JSONException ex){
-            Log.d("getItemId",ex.toString());
-            ex.printStackTrace();
-        }
-        return 0;// moviesData.length();
+        return id;
     }
 
     @Override
     public int getItemCount() {
-        int count=0;
-        try {
-            if(moviesData!=null) {
-                JSONArray items = moviesData.getJSONArray("results");
-                count = items.length();
-            }
-        }
-        catch (JSONException ex){
-
-        }
-        return count;
+        return (mMovies==null)? 0 : mMovies.size();
     }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {

@@ -3,9 +3,11 @@ package com.georgestudenko.popularmovies.Utils;
 import android.content.ContentResolver;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.georgestudenko.popularmovies.Data.FavoriteMovieContract.FavoriteMovieEntry;
+import com.georgestudenko.popularmovies.Models.Movie;
 import com.georgestudenko.popularmovies.UI.MainActivity;
 import com.georgestudenko.popularmovies.R;
 
@@ -15,62 +17,93 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.R.attr.host;
 
 /**
  * Created by george on 17/01/2017.
  */
 
-public class TheMovieDBQueryTask extends AsyncTask<Object,Void,String> {
+public class TheMovieDBQueryTask extends AsyncTask<Object,Void,List<Movie>> {
     private MainActivity mMainActivityCallerActivity;
     private String mUrl;
     private final String POPULAR_MOVIE_LIST_URL="http://api.themoviedb.org/3/movie/popular";
     private final String TOP_RATED_MOVIE_LIST_URL="http://api.themoviedb.org/3/movie/top_rated";
 
     @Override
-    protected String doInBackground(Object... param) {
+    protected List<Movie> doInBackground(Object... param) {
         URL url = (URL) param[0];
-        mUrl = url.toString();
-        mMainActivityCallerActivity = (MainActivity) param[1];
 
-        String moviesData= null;
+        mUrl= url.toString();
+
+        mMainActivityCallerActivity = (MainActivity) param[1];
+        List<Movie> movies = new ArrayList<Movie>();
         try {
             if(mUrl.contains(POPULAR_MOVIE_LIST_URL) || mUrl.contains(TOP_RATED_MOVIE_LIST_URL)) {
-                moviesData = NetworkUtils.getResponseFromHttpUrl(url);
-            }else {
-                JSONArray favoriteMoviesJSON = new JSONArray();
-                JSONObject movie = new JSONObject();
-                JSONObject finalMoviesJSONObject = new JSONObject();
 
+                try{
+                    JSONArray moviesDataJSONArray = new JSONObject(NetworkUtils.getResponseFromHttpUrl(url)).getJSONArray("results");
+
+                    for(int i=0; i<moviesDataJSONArray.length();i++){
+                        JSONObject movie = moviesDataJSONArray.getJSONObject(i);
+                        Uri posterUri = NetworkUtils.buildPosterURL(movie.getString("poster_path").replace("/",""));
+
+                        String movieId =movie.getString("id");
+                        Long movieIdLong = Long.parseLong(movieId);
+                        String trailersAPIUrl = NetworkUtils.buildResourcesURL(movieId,"videos");
+                        String reviewsAPIUrl = NetworkUtils.buildResourcesURL(movieId,"reviews");
+
+                        Movie currentMovie = new Movie(
+                                movieIdLong,
+                                movie.getString("original_title"),
+                                movie.getString("overview"),
+                                movie.getString("release_date"),
+                                movie.getString("vote_average"),
+                                trailersAPIUrl,
+                                reviewsAPIUrl,
+                                posterUri,
+                                movie.getString("poster_path").replace("/",""),
+                                "",
+                                "");
+
+                        movies.add(currentMovie);
+                    }
+
+                }catch (JSONException ex){
+                    ex.printStackTrace();
+                }
+            }else {
                 ContentResolver contentResolver = mMainActivityCallerActivity.getContentResolver();
                 Cursor cursor = contentResolver.query(FavoriteMovieEntry.FAVORITE_MOVIE_CONTENT_URI, null, null, null, null);
                 cursor.moveToFirst();
-
-                    try {
                         while (cursor.moveToNext()) {
-                            movie = new JSONObject();
-                            movie.put("id", cursor.getString(FavoriteMovieEntry.COLUMN_MOVIES_ID_INDEX));
-                            movie.put("overview", cursor.getString(FavoriteMovieEntry.COLUMN_SYNOPSIS_INDEX));
-                            movie.put("release_date", cursor.getString(FavoriteMovieEntry.COLUMN_RELEASE_DATE_INDEX));
-                            movie.put("vote_average", cursor.getString(FavoriteMovieEntry.COLUMN_RATING_INDEX));
-                            movie.put("poster_path", cursor.getString(FavoriteMovieEntry.COLUMN_POSTER_INDEX));
-                            movie.put("original_title", cursor.getString(FavoriteMovieEntry.COLUMN_TITLE_INDEX));
-                            movie.put("reviews", cursor.getString(FavoriteMovieEntry.COLUMN_REVIEWS_INDEX));
-                            movie.put("bigPoster", cursor.getString(FavoriteMovieEntry.COLUMN_BIG_POSTER_INDEX));
-                            favoriteMoviesJSON.put(movie);
+                            Uri posterUri = Uri.parse(cursor.getString(FavoriteMovieEntry.COLUMN_POSTER_INDEX));
+
+                            Movie currentMovie = new Movie(
+                                    cursor.getLong(FavoriteMovieEntry.COLUMN_ID_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_TITLE_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_SYNOPSIS_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_RELEASE_DATE_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_RATING_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_TRAILER_URL_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_REVIEWS_URL_INDEX),
+                                    posterUri,
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_POSTER_INDEX).replace("/",""),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_BIG_POSTER_INDEX),
+                                    cursor.getString(FavoriteMovieEntry.COLUMN_REVIEWS_INDEX));
+
+                            movies.add(currentMovie);
                     }
                         cursor.close();
-                        finalMoviesJSONObject.put("results",favoriteMoviesJSON);
-                    }catch (JSONException ex){
-                        ex.printStackTrace();
-                    }
-                moviesData = finalMoviesJSONObject.toString();
             }
 
         }catch (IOException ex){
             System.out.println("ERROR GETTING RAWDATA: ");
             ex.printStackTrace();
         }
-        return moviesData;
+        return movies;
     }
 
     @Override
@@ -79,16 +112,9 @@ public class TheMovieDBQueryTask extends AsyncTask<Object,Void,String> {
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        if(s!=null) {
-            JSONObject movieData = null;
-            try {
-                movieData = new JSONObject(s);
-                    mMainActivityCallerActivity.mMovieAdapter.setMoviesData(movieData);
-            } catch (JSONException ex) {
-                System.out.println("ERROR onPostExcecute");
-                ex.printStackTrace();
-            }
+    protected void onPostExecute(List<Movie> movies) {
+        if(movies!=null) {
+            mMainActivityCallerActivity.mMovieAdapter.setMoviesData(movies);
         }else{
             String errorMessage= Resources.getSystem().getString(R.string.error);
             System.out.println("ERROR MESSAGE ====> "+ errorMessage);

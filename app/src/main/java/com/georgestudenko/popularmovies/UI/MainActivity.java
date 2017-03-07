@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.georgestudenko.popularmovies.Adapters.MovieAdapter;
 import com.georgestudenko.popularmovies.BuildConfig;
+import com.georgestudenko.popularmovies.Models.Movie;
 import com.georgestudenko.popularmovies.R;
 import com.georgestudenko.popularmovies.UI.DetailsActivity;
 import com.georgestudenko.popularmovies.Utils.NetworkUtils;
@@ -33,13 +34,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
      * the apiKey variable below:                                                                  *
      * ********************************************************************************************/
 
-    private final String apiKey = BuildConfig.API_KEY;
-
-    private final String scheme="http";
-    private final String secureScheme="https://";
-    private final String host = "api.themoviedb.org";
-    private final String apiVersion="3";
-    private final String type="movie";
     public static final String SORT_BY_TOP_RATED ="top_rated";
     public static final String SORT_BY_POPULAR ="popular";
     public static final String SORT_BY_FAVORITES ="userFavoriteMovies";
@@ -74,15 +68,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         mBinding.rvImages.setAdapter(mMovieAdapter);
         if(NetworkUtils.isConnected(this.getApplicationContext())) {
             hideNoInternetError();
-            new TheMovieDBQueryTask().execute(buildURL(scheme, host, apiVersion, type, currentSortBy, apiKey, currentPage), this);
+            executeMovieDBQueryTask();
         }else{
             hideNoInternetError();
             Toast.makeText(this.getApplication(),this.getString(R.string.error),Toast.LENGTH_SHORT).show();
             setSortBy(SORT_BY_FAVORITES);
             this.setTitle(R.string.my_favorite_movies);
-            new TheMovieDBQueryTask().execute(buildURL(scheme, host, apiVersion, type, currentSortBy, apiKey, currentPage), this);
+            executeMovieDBQueryTask();
         }
     }
+
+    private void executeMovieDBQueryTask(){
+       new TheMovieDBQueryTask().execute(NetworkUtils.buildMoviesURL(currentSortBy, currentPage), this);
+    }
+
     public void showNoInternetError(){
         mBinding.tvNoInternetError.setVisibility(View.VISIBLE);
         mBinding.goToFavoritesButton.setVisibility(View.VISIBLE);
@@ -120,14 +119,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
             if (id == R.id.action_sort_by_most_popular) {
                 setSortBy(SORT_BY_POPULAR);
                 this.setTitle(R.string.title_sorted_by_popular);
-                new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+                executeMovieDBQueryTask();
                 return true;
             }
 
             if (id == R.id.action_sort_by_top_rated) {
                 setSortBy(SORT_BY_TOP_RATED);
                 this.setTitle(R.string.title_sorted_by_top_rated);
-                new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+                executeMovieDBQueryTask();
                 return true;
             }
         }else{
@@ -146,57 +145,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         return super.onOptionsItemSelected(item);
     }
 
-    private URL buildURL(String scheme, String host,String apiVersion,String type, String sortBy, String apiKey, String page){
-        URL URL= null;
-        Uri.Builder builder= new Uri.Builder();
-        builder.scheme(scheme)
-                .authority(host)
-                .appendPath(apiVersion)
-                .appendPath(type)
-                .appendPath(sortBy)
-                .appendQueryParameter("api_key", apiKey)
-                .appendQueryParameter("page",page)
-                .build();
-        try {
-            URL = new URL(builder.build().toString());
-        }catch (MalformedURLException ex){
-            System.out.println("ERROR PARSING URL: ");
-            ex.printStackTrace();
-        }
-        return URL;
-    }
-
     @Override
     public void onPosterClick(int itemIndex) {
-        JSONObject movie = mMovieAdapter.getMovieDetails(itemIndex);
+        Movie movie = mMovieAdapter.getMovieDetails(itemIndex);
         Intent intent = new Intent(this,DetailsActivity.class);
-        try{
-            intent.putExtra("title", movie.getString("original_title"));
 
-            String posterPath=movie.getString("poster_path").replace("/", "");
-            Uri posterUri=mMovieAdapter.buildPosterURL(posterPath);
-            String poster=posterUri.toString();
-            intent.putExtra("poster", poster);
-            intent.putExtra("rawPoster", posterPath);
-
-            intent.putExtra("release", movie.getString("release_date"));
-            intent.putExtra("vote", movie.getString("vote_average"));
-            intent.putExtra("overview", movie.getString("overview"));
-            intent.putExtra("id", movie.getString("id"));
-
-            String trailersAPIUrl = secureScheme+host+"/"+apiVersion+"/"+type+"/"+movie.getString("id")+"/videos?api_key="+apiKey;
-            String reviewsAPIUrl = secureScheme+host+"/"+apiVersion+"/"+type+"/"+movie.getString("id")+"/reviews?api_key="+apiKey;
-            intent.putExtra("trailersUrl", trailersAPIUrl);
-            intent.putExtra("reviewsUrl", reviewsAPIUrl);
-
-            if(getSortBy()==SORT_BY_FAVORITES && !NetworkUtils.isConnected(getApplicationContext())){
-                intent.putExtra("reviews", movie.getString("reviews"));
-                intent.putExtra("bigPoster", movie.getString("bigPoster"));
-            }
-
-        }catch (JSONException ex){
-            ex.printStackTrace();
-        }
+        intent.putExtra("movie", movie);
         startActivity(intent);
     }
 
@@ -204,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
         hideNoInternetError();
         setSortBy(SORT_BY_FAVORITES);
         this.setTitle(R.string.my_favorite_movies);
-        this.setTitle(R.string.my_favorite_movies);
-        new TheMovieDBQueryTask().execute(buildURL(scheme,host,apiVersion,type,currentSortBy,apiKey,currentPage), this);
+        executeMovieDBQueryTask();
     }
 }

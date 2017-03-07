@@ -27,6 +27,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.georgestudenko.popularmovies.Data.FavoriteMovieContract;
 import com.georgestudenko.popularmovies.Data.FavoriteMovieContract.FavoriteMovieEntry;
+import com.georgestudenko.popularmovies.Models.Movie;
 import com.georgestudenko.popularmovies.R;
 import com.georgestudenko.popularmovies.Utils.NetworkUtils;
 import com.georgestudenko.popularmovies.databinding.DetailsActivityBinding;
@@ -40,7 +41,7 @@ import org.json.JSONObject;
 
 public class DetailsActivity extends AppCompatActivity {
     boolean mIsFavoriteMovie;
-    String mMovieId;
+    Long mMovieId;
     String mYoutubeVideoBaseUrl="https://www.youtube.com/watch?v=";
     String mYoutubeThumbnailBaseUrl="http://img.youtube.com/vi/#ID#/hqdefault.jpg";
     DetailsActivityBinding mBinding;
@@ -54,37 +55,34 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mReviews="";
         mBinding = DataBindingUtil.setContentView(this, R.layout.details_activity);
-        Intent intent = getIntent();
+        Movie movie = movie = getMovie();
 
-        if(intent.hasExtra("title")){
-            mMovieId = intent.getStringExtra("id");
-            mBinding.title.setText(intent.getStringExtra("title"));
-            mPoster= intent.getStringExtra("poster");
+        if (movie!=null) {
+            mMovieId = movie.getId();
+            mBinding.title.setText(movie.getTitle());
+            mPoster= movie.getPoster().toString();
 
-            System.out.println("POSTER:  "+ mPoster);
-            mPosterUri= Uri.parse(mPoster);
+            mPosterUri= movie.getPoster();
             Picasso.with(getApplicationContext()).load(mPosterUri).networkPolicy(NetworkPolicy.OFFLINE).into(mBinding.poster);
 
-            String release=intent.getStringExtra("release");
+            String release=movie.getRelease();
             mBinding.release.setText(release);
-            mBinding.overview.setText(intent.getStringExtra("overview"));
-            mBinding.votes.setText(intent.getStringExtra("vote")+"/10");
+            mBinding.overview.setText(movie.getOverview());
+            mBinding.votes.setText(movie.getVote_average()+"/10");
 
             if (MainActivity.getSortBy()==MainActivity.SORT_BY_FAVORITES && !NetworkUtils.isConnected(getApplicationContext())){
-                String thumbUrl = getIntent().getStringExtra("bigPoster");
+                String thumbUrl = movie.getBigPoster();
                 Picasso.with(getApplicationContext()).load(thumbUrl).networkPolicy(NetworkPolicy.OFFLINE).into(mBinding.bigTopPoster);
-                mBinding.reviews.loadDataWithBaseURL(null, getIntent().getStringExtra("reviews"), getString(R.string.html_mime), getString(R.string.utf8), null);
-                System.out.println("REVIEWS: " + getIntent().getStringExtra("reviews"));
+                mBinding.reviews.loadDataWithBaseURL(null, movie.getReviewsUrl(), getString(R.string.html_mime), getString(R.string.utf8), null);
 
                 mBinding.trailersLabel.setVisibility(View.INVISIBLE);
-
             }
             else if(NetworkUtils.isConnected(getApplicationContext())){
-                getTrailers(intent.getStringExtra("trailersUrl"));
-                getReviews(intent.getStringExtra("reviewsUrl"));
+                getTrailers(movie.getTrailersUrl());
+                getReviews(movie.getReviewsUrl());
             }
 
-            mIsFavoriteMovie = isMarkedAsFavorite(mMovieId);
+            mIsFavoriteMovie = isMarkedAsFavorite(mMovieId.toString());
 
             if(mIsFavoriteMovie){
                 mBinding.favoriteButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimaryDark)));
@@ -92,6 +90,15 @@ public class DetailsActivity extends AppCompatActivity {
                 mBinding.favoriteButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGray)));
             }
         }
+    }
+
+    private Movie getMovie(){
+        Movie movie = null;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("movie")) {
+             movie = extras.getParcelable("movie");
+        }
+        return movie;
     }
 
     private boolean isMarkedAsFavorite (String movieId){
@@ -112,7 +119,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void toogleFavorite(View view) {
         ContentResolver contentResolver = getContentResolver();
-        Uri uri = ContentUris.withAppendedId(FavoriteMovieContract.FavoriteMovieEntry.FAVORITE_MOVIE_CONTENT_URI,Long.parseLong(mMovieId));
+        Uri uri = ContentUris.withAppendedId(FavoriteMovieContract.FavoriteMovieEntry.FAVORITE_MOVIE_CONTENT_URI,Long.parseLong(mMovieId.toString()));
 
         if(mIsFavoriteMovie){
             contentResolver.delete(uri,null,null);
@@ -122,16 +129,17 @@ public class DetailsActivity extends AppCompatActivity {
         }else {
             try {
                 ContentValues cv = new ContentValues();
+                Movie movie = movie = getMovie();
                 cv.put(FavoriteMovieEntry.COLUMN_MOVIE_ID, mMovieId);
                 cv.put(FavoriteMovieEntry.COLUMN_MOVIE_SYNOPSIS, mBinding.overview.getText().toString());
                 cv.put(FavoriteMovieEntry.COLUMN_MOVIE_RATING, mBinding.votes.getText().toString());
                 cv.put(FavoriteMovieEntry.COLUMN_MOVIE_RELEASE_DATE, mBinding.release.getText().toString());
-                cv.put(FavoriteMovieEntry.COLUMN_MOVIE_POSTER, getIntent().getStringExtra("rawPoster"));
+                cv.put(FavoriteMovieEntry.COLUMN_MOVIE_POSTER, movie.getRawPoster());
                 cv.put(FavoriteMovieEntry.COLUMN_TITLE, mBinding.title.getText().toString());
                 cv.put(FavoriteMovieEntry.COLUMN_BIG_POSTER, mBigPoster);
                 cv.put(FavoriteMovieEntry.COLUMN_REVIEWS_CONTENT, mReviews);
-                cv.put(FavoriteMovieEntry.COLUMN_REVIEWS_URL, getIntent().getStringExtra("reviewsUrl"));
-                cv.put(FavoriteMovieEntry.COLUMN_TRAILER_URL, getIntent().getStringExtra("trailersUrl"));
+                cv.put(FavoriteMovieEntry.COLUMN_REVIEWS_URL,movie.getReviewsUrl());
+                cv.put(FavoriteMovieEntry.COLUMN_TRAILER_URL, movie.getTrailersUrl());
                 Uri insertedUri = contentResolver.insert(uri, cv);
 
                 mIsFavoriteMovie = true;
