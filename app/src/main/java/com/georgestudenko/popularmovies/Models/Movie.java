@@ -16,6 +16,9 @@ public class Movie implements Parcelable {
     private String mVote_average;
     private String mTrailersUrl;
     private String mReviewsUrl;
+
+
+    private String mReviews;
     private Uri mPoster;
     private String mRawPoster;
     private String mBigPoster;
@@ -24,7 +27,7 @@ public class Movie implements Parcelable {
     public Movie(){ }
 
     // Full constructor
-    public Movie(long mId, String mTitle, String mOverview, String mRelease, String mVote_average, String mTrailersUrl, String mReviewsUrl, Uri mPoster, String mRawPoster, String mBigPoster) {
+    public Movie(long mId, String mTitle, String mOverview, String mRelease, String mVote_average, String mTrailersUrl, String mReviewsUrl, Uri mPoster, String mRawPoster, String mBigPoster,String mReviews) {
         this.mId = mId;
         this.mTitle = mTitle;
         this.mOverview = mOverview;
@@ -32,9 +35,18 @@ public class Movie implements Parcelable {
         this.mVote_average = mVote_average;
         this.mTrailersUrl = mTrailersUrl;
         this.mReviewsUrl = mReviewsUrl;
+        this.mReviews = mReviews;
         this.mPoster = mPoster;
         this.mRawPoster = mRawPoster;
         this.mBigPoster = mBigPoster;
+    }
+
+    public String getmReviews() {
+        return mReviews;
+    }
+
+    public void setmReviews(String mReviews) {
+        this.mReviews = mReviews;
     }
 
     public String getTitle() {
@@ -131,6 +143,7 @@ public class Movie implements Parcelable {
         dest.writeString(this.mVote_average);
         dest.writeString(this.mTrailersUrl);
         dest.writeString(this.mReviewsUrl);
+        dest.writeString(this.mReviews);
         dest.writeParcelable(this.mPoster, flags);
         dest.writeString(this.mRawPoster);
         dest.writeString(this.mBigPoster);
@@ -144,6 +157,7 @@ public class Movie implements Parcelable {
         this.mVote_average = in.readString();
         this.mTrailersUrl = in.readString();
         this.mReviewsUrl = in.readString();
+        this.mReviews = in.readString();
         this.mPoster = in.readParcelable(Uri.class.getClassLoader());
         this.mRawPoster = in.readString();
         this.mBigPoster = in.readString();
