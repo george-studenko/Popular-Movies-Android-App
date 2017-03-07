@@ -23,7 +23,7 @@ public class NetworkUtils {
     private final static String apiKey = BuildConfig.API_KEY;
 
     private final static String scheme="http";
-    private final static String secureScheme="https://";
+    private final static String secureScheme="https";
     private final static String host = "api.themoviedb.org";
     private final static String apiVersion="3";
     private final static String type="movie";
