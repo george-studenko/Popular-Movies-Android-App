@@ -28,6 +28,11 @@ public class NetworkUtils {
     private final static String apiVersion="3";
     private final static String type="movie";
 
+    private static String imageHost="image.tmdb.org";
+    private static String imageFragmentT="t";
+    private static String imageFragmentP="p";
+    private static String imageSize="w342";
+
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
