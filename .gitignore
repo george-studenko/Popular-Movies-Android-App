@@ -9,3 +9,4 @@
 .externalNativeBuild
 gradle.properties
 /.idea
+/app/src/androidTest/java/com/georgestudenko/popularmovies/ExampleInstrumentedTest.java
