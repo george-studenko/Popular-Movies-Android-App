@@ -9,7 +9,7 @@ import android.os.Parcelable;
  */
 
 public class Movie implements Parcelable {
-    private String mId;
+    private long mId;
     private String mTitle;
     private String mOverview;
     private String mRelease;
@@ -24,7 +24,7 @@ public class Movie implements Parcelable {
     public Movie(){ }
 
     // Full constructor
-    public Movie(String mId, String mTitle, String mOverview, String mRelease, String mVote_average, String mTrailersUrl, String mReviewsUrl, Uri mPoster, String mRawPoster, String mBigPoster) {
+    public Movie(long mId, String mTitle, String mOverview, String mRelease, String mVote_average, String mTrailersUrl, String mReviewsUrl, Uri mPoster, String mRawPoster, String mBigPoster) {
         this.mId = mId;
         this.mTitle = mTitle;
         this.mOverview = mOverview;
@@ -85,11 +85,11 @@ public class Movie implements Parcelable {
         this.mReviewsUrl = mReviewsUrl;
     }
 
-    public String getId() {
+    public long getId() {
         return mId;
     }
 
-    public void setId(String mId) {
+    public void setId(long mId) {
         this.mId = mId;
     }
 
@@ -124,7 +124,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mId);
+        dest.writeLong(this.mId);
         dest.writeString(this.mTitle);
         dest.writeString(this.mOverview);
         dest.writeString(this.mRelease);
@@ -137,7 +137,7 @@ public class Movie implements Parcelable {
     }
 
     protected Movie(Parcel in) {
-        this.mId = in.readString();
+        this.mId = in.readLong();
         this.mTitle = in.readString();
         this.mOverview = in.readString();
         this.mRelease = in.readString();
