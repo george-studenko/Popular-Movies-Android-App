@@ -27,6 +27,8 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ItemClickListener{
 
     /***********************************************************************************************
@@ -56,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Item
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BuildConfig.DEBUG) {
+            Timber.uprootAll();
+            Timber.plant(new Timber.DebugTree());
+        }
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         int columns= getNumberOfColumns(this,180);
